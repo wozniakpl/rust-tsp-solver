@@ -2,6 +2,9 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
+mod solver;
+
+
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let file = File::open(filename)?;
@@ -25,57 +28,27 @@ fn get_matrix(filename: &str) -> Vec<Vec<f32>> {
     panic!("Error reading file {}", filename);
 }
 
-fn solve(matrix: &Vec<Vec<f32>>) -> Vec<usize> {
-    let mut solution = vec![1];
-    let mut visited_nodes = vec![1];
-
-    // TODO: naive solution - choose always the next node with the lowest cost
-    while visited_nodes.len() < matrix.len() {
-        let mut min_cost = std::f32::MAX;
-        let mut min_index = 0;
-        for i in 0..matrix.len() {
-            if !visited_nodes.contains(&(i+1)) {
-                let cost = matrix[solution.last().unwrap() - 1][i];
-                if cost < min_cost {
-                    min_cost = cost;
-                    min_index = i;
-                }
-            }
-        }
-        solution.push(min_index + 1);
-        visited_nodes.push(min_index + 1);
-    }
-
-    return solution;
-}
-
-fn cost(solution: &Vec<usize>, matrix: &Vec<Vec<f32>>) -> f32 {
-    let mut cost = 0.0;
-    for i in 0..solution.len() - 1 {
-        cost += matrix[solution[i] - 1][solution[i + 1] - 1];
-    }
-    cost += matrix[solution[solution.len() - 1] - 1][solution[0] - 1];
-    return cost;
+fn solve(matrix: &Vec<Vec<f32>>, solver: &dyn solver::SolveTSP) -> solver::TSPSolution {
+    return solver.solve(matrix);
 }
 
 fn main() {
     let input_filename = std::env::args().nth(1).expect("no input file given");
     let input_matrix = get_matrix(&input_filename);
-    let solution = solve(&input_matrix);
-    println!("{:?} (cost {})", solution, cost(&solution, &input_matrix));
+    let solution = solve(&input_matrix, &solver::BruteForceSolver{});
+    println!("{:?} (cost {})", solution.path, solution.cost);
 
     // TODO: if 2nd arg provided, compare result with that file
 }
-
 // https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html
 #[cfg(test)]
 mod tests {
     #[test]
     fn simple_path() {
         let matrix = vec![vec![0.0, 1.0], vec![1.0, 0.0]];
-        let solution = super::solve(&matrix);
-        assert_eq!(solution, vec![1, 2]);
-        assert_eq!(super::cost(&solution, &matrix), 2.0);
+        let solution = super::solve(&matrix, &super::solver::BruteForceSolver{});
+        assert_eq!(solution.path, vec![1, 2]);
+        assert_eq!(solution.cost, 2.0);
     }
 
     #[test]
@@ -87,8 +60,8 @@ mod tests {
             vec![2.0, 6.0, 5.0, 0.0, 6.0],
             vec![7.0, 3.0, 8.0, 6.0, 0.0],
         ];
-        let solution = super::solve(&matrix);
-        assert_eq!(solution, vec![1, 3, 2, 5, 4]);
-        assert_eq!(super::cost(&solution, &matrix), 19.0);
+        let solution = super::solve(&matrix, &super::solver::BruteForceSolver{});
+        assert_eq!(solution.path, vec![1, 3, 2, 5, 4]);
+        assert_eq!(solution.cost, 19.0);
     }
 }
