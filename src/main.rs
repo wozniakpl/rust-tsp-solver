@@ -3,7 +3,6 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 mod utils;
-
 mod brute_force;
 mod solver;
 
@@ -29,7 +28,7 @@ fn get_matrix(filename: &str) -> Vec<Vec<f32>> {
         }
         return matrix;
     }
-    panic!("Error reading file {}", filename);
+    panic!("Error reading file '{}'", filename);
 }
 
 fn solve(matrix: &Vec<Vec<f32>>, solver: &dyn solver::SolveTSP) -> solver::TSPSolution {
@@ -37,7 +36,7 @@ fn solve(matrix: &Vec<Vec<f32>>, solver: &dyn solver::SolveTSP) -> solver::TSPSo
 }
 
 fn main() {
-    let input_filename = std::env::args().nth(1).expect("no input file given");
+    let input_filename = std::env::args().nth(1).expect("No input file given");
     let input_matrix = get_matrix(&input_filename);
     let solution = solve(&input_matrix, &brute_force::BruteForceSolver {});
     println!("{:?} (cost {})", solution.path, solution.cost);
