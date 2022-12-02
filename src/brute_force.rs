@@ -4,7 +4,6 @@ use crate::utils;
 pub struct BruteForceSolver();
 
 impl solver::SolveTSP for BruteForceSolver {
-
     fn solve(&self, matrix: &Vec<Vec<f32>>) -> solver::TSPSolution {
         let mut min_cost = std::f32::MAX;
         let mut min_solution = vec![];

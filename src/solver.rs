@@ -21,9 +21,22 @@ mod tests {
     #[test]
     fn calculating_cost() {
         // 1.0 + 1.0 = 2.0
-        assert_eq!(super::get_cost(&vec![1, 2], &vec![vec![0.0, 1.0], vec![1.0, 0.0]]), 2.0);
+        assert_eq!(
+            super::get_cost(&vec![1, 2], &vec![vec![0.0, 1.0], vec![1.0, 0.0]]),
+            2.0
+        );
 
         // 1.0 + 2.0 + 3.0 = 6.0
-        assert_eq!(super::get_cost(&vec![1, 2, 3], &vec![vec![0.0, 1.0, 2.0], vec![1.0, 0.0, 3.0], vec![2.0, 3.0, 0.0]]), 6.0);
+        assert_eq!(
+            super::get_cost(
+                &vec![1, 2, 3],
+                &vec![
+                    vec![0.0, 1.0, 2.0],
+                    vec![1.0, 0.0, 3.0],
+                    vec![2.0, 3.0, 0.0]
+                ]
+            ),
+            6.0
+        );
     }
 }
