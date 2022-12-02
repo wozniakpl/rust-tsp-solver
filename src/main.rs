@@ -2,9 +2,9 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 
-mod utils;
 mod brute_force;
 mod solver;
+mod utils;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -36,8 +36,16 @@ fn solve(matrix: &Vec<Vec<f32>>, solver: &dyn solver::SolveTSP) -> solver::TSPSo
 }
 
 fn main() {
+    if std::env::args().len() <= 1 {
+        println!("Usage: {} <filename>", std::env::args().nth(0).unwrap());
+        return;
+    }
+
+    // TODO: parse args
+
     let input_filename = std::env::args().nth(1).expect("No input file given");
     let input_matrix = get_matrix(&input_filename);
+    // TODO: different solver based on args
     let solution = solve(&input_matrix, &brute_force::BruteForceSolver {});
     println!("{:?} (cost {})", solution.path, solution.cost);
 
