@@ -4,6 +4,7 @@ use std::path::Path;
 
 mod utils;
 mod brute_force;
+mod dynamic;
 mod solver;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -48,10 +49,14 @@ fn main() {
 mod tests {
     #[test]
     fn simple_path() {
-        let matrix = vec![vec![0.0, 1.0], vec![1.0, 0.0]];
-        let solution = super::solve(&matrix, &super::brute_force::BruteForceSolver {});
-        assert_eq!(solution.path, vec![1, 2]);
-        assert_eq!(solution.cost, 2.0);
+        fn solve_with_solver(solver: &dyn super::solver::SolveTSP) {
+            let matrix = vec![vec![0.0, 1.0], vec![1.0, 0.0]];
+            let solution = super::solve(&matrix, solver);
+            assert_eq!(solution.path, vec![1, 2]);
+            assert_eq!(solution.cost, 2.0);
+        }
+        solve_with_solver(&super::brute_force::BruteForceSolver {});
+        solve_with_solver(&super::dynamic::DynamicSolver {});
     }
 
     #[test]
