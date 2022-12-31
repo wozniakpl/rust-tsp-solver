@@ -53,8 +53,17 @@ fn main() {
     // TODO: if 2nd arg provided, compare result with that file
 }
 // https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html
+
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn zero_length_path() {
+        let matrix = vec![vec![0.0]]; // 1x1 dim
+        let solution = super::solve(&matrix, &super::brute_force::BruteForceSolver {});
+        assert_eq!(solution.path, vec![1]);
+        assert_eq!(solution.cost, 0.0);
+    }
+
     #[test]
     fn simple_path() {
         fn solve_with_solver(solver: &dyn super::solver::SolveTSP) {
