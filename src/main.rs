@@ -3,6 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 mod brute_force;
+mod dynamic;
 mod solver;
 mod utils;
 
@@ -52,14 +53,27 @@ fn main() {
     // TODO: if 2nd arg provided, compare result with that file
 }
 // https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html
+
 #[cfg(test)]
 mod tests {
     #[test]
-    fn simple_path() {
-        let matrix = vec![vec![0.0, 1.0], vec![1.0, 0.0]];
+    fn zero_length_path() {
+        let matrix = vec![vec![0.0]]; // 1x1 dim
         let solution = super::solve(&matrix, &super::brute_force::BruteForceSolver {});
-        assert_eq!(solution.path, vec![1, 2]);
-        assert_eq!(solution.cost, 2.0);
+        assert_eq!(solution.path, vec![1]);
+        assert_eq!(solution.cost, 0.0);
+    }
+
+    #[test]
+    fn simple_path() {
+        fn solve_with_solver(solver: &dyn super::solver::SolveTSP) {
+            let matrix = vec![vec![0.0, 1.0], vec![1.0, 0.0]];
+            let solution = super::solve(&matrix, solver);
+            assert_eq!(solution.path, vec![1, 2]);
+            assert_eq!(solution.cost, 2.0);
+        }
+        solve_with_solver(&super::brute_force::BruteForceSolver {});
+        solve_with_solver(&super::dynamic::DynamicSolver {});
     }
 
     #[test]
